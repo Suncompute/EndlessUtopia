@@ -6,6 +6,14 @@ EndlessUtopia — A Coordinate‑Based ASCII Exploration Game
 
 **EndlessUtopia** is an infinite, procedurally-generated ASCII world where each coordinate `(x, y)` produces deterministic patterns, glitches, or calm empty spaces. The world is endless, quiet, and mysterious, featuring a rare wandering ASCII Cat that appears only at special coordinates and leaves subtle traces.
 
+## Requirements
+
+- **Rust 1.70+**: For building the library
+- **Terminal/Browser Support**: Best experienced with Unicode-capable terminals or browsers
+  - Most modern terminals (iTerm2, Windows Terminal, GNOME Terminal) support the full character set
+  - Fallback ASCII characters are used for core gameplay elements (cat = @, C, c, o, O)
+  - Block characters (░▒▓█) used for visual effects may vary by environment
+
 ## Features
 
 - 🌌 **Infinite World**: Truly endless coordinate-based generation
