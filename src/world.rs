@@ -34,20 +34,20 @@ impl World {
 
     /// Generate a tile at the given coordinates
     pub fn get_tile(&mut self, x: i32, y: i32) -> Tile {
+        // Check if cat has visited this location (check first!)
+        if self.cat_visited.contains(&(x, y)) {
+            return Tile {
+                character: self.get_trace_char(x, y),
+                biome: Biome::CatTrace,
+            };
+        }
+
         // Check if cat is present at this coordinate
         if self.is_cat_location(x, y) {
             self.cat_visited.insert((x, y));
             return Tile {
                 character: self.get_cat_char(x, y),
                 biome: Biome::CatPresent,
-            };
-        }
-
-        // Check if cat has visited this location
-        if self.cat_visited.contains(&(x, y)) {
-            return Tile {
-                character: self.get_trace_char(x, y),
-                biome: Biome::CatTrace,
             };
         }
 
@@ -89,11 +89,12 @@ impl World {
     }
 
     /// Check if the cat appears at this special coordinate
-    fn is_cat_location(&self, x: i32, y: i32) -> bool {
+    pub fn is_cat_location(&self, x: i32, y: i32) -> bool {
+        // Cat appears at rare special coordinates
+        // Using a simpler hash-based approach for reliability
         let hash = self.coord_hash(x, y);
-        // Cat appears at very rare special coordinates
-        // Using prime number magic for rarity
-        (hash % 10000) == 7 && (x.abs() + y.abs()) % 23 == 0
+        // Cat appears roughly 1 in every 1300 coordinates
+        (hash % 1300) < 1 && (x.abs() + y.abs()) % 13 == 0
     }
 
     /// Get the cat character based on position (different poses)

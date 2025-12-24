@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EndlessUtopia - ASCII World Explorer</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ffaa;
+            text-shadow: 0 0 10px #00ffaa;
+        }
+        
+        #world {
+            white-space: pre;
+            font-size: 12px;
+            line-height: 1.2;
+            background: #000;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            overflow-x: auto;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        button {
+            background: #003300;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        input {
+            background: #001100;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-radius: 3px;
+            width: 100px;
+        }
+        
+        .info {
+            text-align: center;
+            margin: 10px 0;
+            color: #00ffaa;
+        }
+        
+        .note {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌌 EndlessUtopia - Infinite ASCII World</h1>
+    
+    <div class="info">
+        <p>Current Position: X=<span id="posX">0</span>, Y=<span id="posY">0</span></p>
+        <p>Cats found nearby: <span id="catCount">0</span></p>
+    </div>
+    
+    <div class="controls">
+        <button onclick="moveWorld(-10, 0)">← West</button>
+        <button onclick="moveWorld(0, -10)">↑ North</button>
+        <button onclick="moveWorld(0, 10)">↓ South</button>
+        <button onclick="moveWorld(10, 0)">East →</button>
+        <br>
+        <button onclick="jumpRandom()">🎲 Random Location</button>
+        <button onclick="findCat()">🐱 Find Cat</button>
+        <br>
+        <label>Jump to X: <input type="number" id="jumpX" value="0"></label>
+        <label>Y: <input type="number" id="jumpY" value="0"></label>
+        <button onclick="jumpTo()">Jump</button>
+    </div>
+    
+    <div id="world">Loading WASM...</div>
+    
+    <div class="note">
+        <p>Note: This is a demo page. To use this with WASM:</p>
+        <p>1. Build with: <code>wasm-pack build --target web</code></p>
+        <p>2. Serve this file with a local web server</p>
+        <p>3. Load the generated WASM module</p>
+    </div>
+    
+    <script>
+        // Placeholder JavaScript - actual implementation would load the WASM module
+        let currentX = 0;
+        let currentY = 0;
+        const width = 80;
+        const height = 24;
+        
+        // Simulated world generator (placeholder - replace with actual WASM)
+        function generateFallback(x, y, w, h) {
+            let result = '';
+            for (let row = 0; row < h; row++) {
+                for (let col = 0; col < w; col++) {
+                    const cx = x + col;
+                    const cy = y + row;
+                    // Simple deterministic pattern
+                    const hash = (cx * 2654435761 + cy * 2246822519) >>> 0;
+                    if (hash % 100 < 60) result += ' ';
+                    else if (hash % 100 < 85) {
+                        const chars = ['.', '·', '~', '*', 'o'];
+                        result += chars[hash % chars.length];
+                    } else {
+                        const chars = ['▓', '▒', '░', '#', '%'];
+                        result += chars[hash % chars.length];
+                    }
+                }
+                result += '\n';
+            }
+            return result;
+        }
+        
+        function render() {
+            const world = document.getElementById('world');
+            // This would use: wasmWorld.render_region(currentX, currentY, width, height)
+            world.textContent = generateFallback(currentX, currentY, width, height);
+            
+            document.getElementById('posX').textContent = currentX;
+            document.getElementById('posY').textContent = currentY;
+        }
+        
+        function moveWorld(dx, dy) {
+            currentX += dx;
+            currentY += dy;
+            render();
+        }
+        
+        function jumpRandom() {
+            currentX = Math.floor(Math.random() * 2000) - 1000;
+            currentY = Math.floor(Math.random() * 2000) - 1000;
+            render();
+        }
+        
+        function jumpTo() {
+            currentX = parseInt(document.getElementById('jumpX').value) || 0;
+            currentY = parseInt(document.getElementById('jumpY').value) || 0;
+            render();
+        }
+        
+        function findCat() {
+            alert('Cat finder requires WASM module. See README for build instructions.');
+        }
+        
+        // Initial render
+        render();
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft': moveWorld(-5, 0); break;
+                case 'ArrowRight': moveWorld(5, 0); break;
+                case 'ArrowUp': moveWorld(0, -5); break;
+                case 'ArrowDown': moveWorld(0, 5); break;
+                case 'r': jumpRandom(); break;
+            }
+        });
+    </script>
+</body>
+</html>
