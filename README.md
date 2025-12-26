@@ -1,6 +1,26 @@
 # EndlessUtopia
 
-EndlessUtopia — A Coordinate‑Based ASCII Exploration Game
+![EndlessUtopia Screenshot](EndlessUtopia.png)
+
+A procedurally generated, infinite ASCII world in your browser. Includes a draggable terminal with commands and a rare wandering Ascicat!
+
+## Features
+
+- Infinite world, rendered in ASCII
+- PuTTY-style terminal (moveable, resizable, blinking prompt)
+- Command system: help, clear, goto, cat, random, pos, etc.
+- Rare Ascicat (Easter Egg)
+- Deterministic world generation
+
+## Usage
+
+- Use the terminal in the bottom right for commands
+- Move with mouse/keyboard
+- Try to find the Ascicat!
+
+---
+
+Made with Rust, WASM, and ❤️
 
 ## Overview
 
