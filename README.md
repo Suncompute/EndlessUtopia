@@ -116,6 +116,11 @@ CLI tool for finding cat coordinates (native only, not WASM) --> todo ?
 
 ## Usage
 
+### Coordinate Limits & Stability
+
+- The `goto X Y` command in the terminal is limited to coordinates between -1,000,000 and +1,000,000 to prevent browser freezes and excessive resource usage. If you enter values outside this range, you will receive an error message and the app will remain stable.
+- This fixes a previous bug ([Issue #4](https://github.com/Suncompute/EndlessUtopia/issues/4)) where extremely large coordinates could freeze the web interface.
+
 ### WASM Application (Browser)
 
 Build and run the interactive web application:
