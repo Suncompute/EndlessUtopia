@@ -43,9 +43,82 @@ Add to your `Cargo.toml`:
 endless_utopia = "0.1.0"
 ```
 
+## Project Structure
+
+```
+EndlessUtopia/
+├── src/
+│   ├── lib.rs          # Entry point, module exports, WASM initialization
+│   ├── world.rs        # Core world generator (World, Tile, Biome)
+│   └── app.rs          # WASM application (Canvas, UI, event handling)
+├── examples/
+│   ├── explore.rs      # CLI tool for terminal exploration
+│   └── cat_finder.rs   # CLI tool for finding cats
+├── Makefile            # Build automation (build, serve, dev, clean)
+├── app.html            # Minimal WASM loader (15 lines)
+└── pkg/                # WASM build output (generated)
+```
+
+### Core Modules
+
+#### **src/lib.rs**
+- Main entry point for the library
+- Exports `World`, `Tile`, and `Biome` structs
+- Contains `#[wasm_bindgen(start)]` for automatic WASM initialization
+- Initializes the `App` when running in browser
+
+#### **src/world.rs**
+- `World`: Coordinate-based infinite ASCII world generator
+- `Tile`: Represents a single world tile (character, color, biome)
+- `Biome`: Enum for world types (Calm, Pattern, Glitch, Cat, CatTrace)
+- Deterministic generation using coordinate hashing
+- Cat spawn logic and trace tracking
+- Pattern generators (waves, checkerboard, stripes, etc.)
+
+#### **src/app.rs**
+- Complete WASM application running in browser
+- Canvas creation and fullscreen management
+- Event handling (mouse, keyboard, wheel, resize)
+- Rendering pipeline:
+  - ASCII world generation
+  - Grid overlay
+  - User drawings
+  - Cat rendering with glow effect
+  - UI elements (logo, position display, input fields)
+- Pan/zoom controls
+- Drawing mode
+
+#### **examples/explore.rs**
+CLI tool for terminal-based world exploration (native only, not WASM)
+
+#### **examples/cat_finder.rs**
+CLI tool for finding cat coordinates (native only, not WASM)
+
 ## Usage
 
-### Basic Example
+### WASM Application (Browser)
+
+Build and run the interactive web application:
+
+```bash
+# Build WASM module
+make build
+
+# Start development server
+make serve
+
+# Visit http://localhost:8000/app.html
+```
+
+**Controls:**
+- **Left-click + Drag**: Draw on canvas
+- **Space + Drag** / **Right-click + Drag**: Pan view
+- **Arrow keys**: Move view
+- **R**: Random location
+- **C**: Find cat
+- **Mouse wheel**: Zoom (future)
+
+### Library Usage (Rust)
 
 ```rust
 use endless_utopia::World;
@@ -69,24 +142,6 @@ fn main() {
 }
 ```
 
-### WASM Usage
-
-```rust
-use endless_utopia::WasmWorld;
-
-let mut world = WasmWorld::new();
-
-// Get character at coordinate
-let ch = world.get_char(10, 20);
-
-// Render a region
-let ascii_art = world.render_region(0, 0, 80, 24);
-console_log(&ascii_art);
-
-// Find cats
-let cat_coords = world.find_cats_near(0, 0, 200);
-```
-
 ## Running Examples
 
 Explore the infinite world:
@@ -95,17 +150,35 @@ Explore the infinite world:
 cargo run --example explore
 ```
 
-## Building for WASM
+## Building
+
+### WASM (Web Browser)
 
 ```bash
-# Install wasm-pack if you haven't already
-cargo install wasm-pack
+# Install dependencies
+make install
 
-# Build for web
-wasm-pack build --target web
+# Build WASM module
+make build
 
-# Build for Node.js
-wasm-pack build --target nodejs
+# Start development server on http://localhost:8000
+make serve
+
+# Development mode (auto-rebuild on changes)
+make dev
+
+# Clean build artifacts
+make clean
+```
+
+### Native (CLI Examples)
+
+```bash
+# Run exploration tool
+cargo run --example explore
+
+# Run cat finder
+cargo run --example cat_finder
 ```
 
 ## Performance

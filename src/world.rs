@@ -90,11 +90,22 @@ impl World {
 
     /// Check if the cat appears at this special coordinate
     pub fn is_cat_location(&self, x: i32, y: i32) -> bool {
-        // Cat appears at rare special coordinates
-        // Using a simpler hash-based approach for reliability
-        let hash = self.coord_hash(x, y);
-        // Cat appears roughly 1 in every 1300 coordinates
-        (hash % 1300) < 1 && (x.abs() + y.abs()) % 13 == 0
+        // Only one true Ascicat in the world!
+        let (cat_x, cat_y) = Self::ascicat_position();
+        x == cat_x && y == cat_y
+    }
+
+    /// Returns the one true Ascicat position (deterministic, but schwer zu erraten)
+    pub fn ascicat_position() -> (i32, i32) {
+        // Use a hash of a fixed string to generate unique but stable coordinates
+        let mut h = 0x517cc1b727220a95u64;
+        for b in b"ascicat" {
+            h = h.wrapping_mul(0x6c62272e07bb0142u64);
+            h ^= *b as u64;
+        }
+        let x = ((h >> 16) & 0xFFFF_FFFF) as i32 - 50_000; // Bereich -50_000..+50_000
+        let y = (h & 0xFFFF_FFFF) as i32 - 50_000;
+        (x, y)
     }
 
     /// Get the cat character based on position (different poses)
