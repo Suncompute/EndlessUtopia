@@ -7,8 +7,8 @@ A procedurally generated, infinite ASCII world in your browser. Includes a dragg
 ## Features
 
 - Infinite world, rendered in ASCII
-- PuTTY-style terminal (moveable, resizable, blinking prompt)
-- Command system: help, clear, goto, cat, random, pos, etc.
+- Endless terminal (moveable, resizable, blinking prompt)
+- Command system: help and look around
 - Rare Ascicat (Easter Egg)
 - Deterministic world generation
 
@@ -39,12 +39,12 @@ Made with Rust, WASM, and ❤️
 - 🌌 **Infinite World**: Truly endless coordinate-based generation
 - 🎲 **Deterministic**: Same coordinates always produce the same result
 - 🐱 **Wandering Cat**: Rare ASCII cat appears at special coordinates
-- 👣 **Cat Traces**: Subtle marks left where the cat has been visited
-- 🎨 **Multiple Biomes**: Calm spaces, patterns, and glitch zones
+- 👣 **Cat Traces**: Subtle marks left where the cat has been visited --> Todo
+- 🎨 **Multiple Biomes**: Calm spaces, patterns, and glitch zones --> Todo
 - ⚡ **Lightweight**: Optimized for Rust + WASM ASCII rendering
 - 🎯 **No Dependencies**: Pure Rust implementation (except wasm-bindgen for WASM targets)
 
-## World Biomes
+## World Biomes --> Todo
 
 The world consists of several biome types:
 
@@ -109,10 +109,10 @@ EndlessUtopia/
 - Drawing mode
 
 #### **examples/explore.rs**
-CLI tool for terminal-based world exploration (native only, not WASM)
+CLI tool for terminal-based world exploration (native only, not WASM) --> todo ?
 
 #### **examples/cat_finder.rs**
-CLI tool for finding cat coordinates (native only, not WASM)
+CLI tool for finding cat coordinates (native only, not WASM) --> todo ?
 
 ## Usage
 
@@ -216,7 +216,7 @@ The ASCII cat is extremely rare and appears only at special coordinates determin
 - Prime number-based hash matching
 - Coordinate sum divisibility checks
 
-When you visit a cat location, it leaves behind subtle traces (dots) that persist in your world instance, creating a unique exploration history.
+TODO: When you visit a cat location, it leaves behind subtle traces (dots) that persist in your world instance, creating a unique exploration history.
 
 Cat characters include: `@`, `C`, `c`, `o`, `O`
 
