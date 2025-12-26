@@ -804,8 +804,7 @@ impl App {
         let max_chars = (max_width / char_width).floor() as usize;
         let line_height = 16.0;
         let prompt_height = 20.0;
-        let available_height = th - (history_start_y - ty) - prompt_height - 10.0;
-        let max_visible_lines = (available_height / line_height).floor() as usize;
+        // let available_height = th - (history_start_y - ty) - prompt_height - 10.0;
         
         // Process lines with wrapping
         let mut wrapped_lines: Vec<String> = Vec::new();
@@ -826,39 +825,56 @@ impl App {
             }
         }
         
-        // Show only the last lines that fit
-        let start_idx = if wrapped_lines.len() > max_visible_lines {
-            wrapped_lines.len() - max_visible_lines
+        // --- NEU: Prompt und History teilen sich den Platz ---
+        let prompt = "explorer@endlessutopia:~$ ";
+        let cursor = if self.terminal_blink { "█" } else { " " };
+        let current_input = self.terminal_input.value();
+        let prompt_and_input = format!("{}{}{}", prompt, current_input, cursor);
+        let max_chars = (max_width / char_width).floor() as usize;
+        // UTF-8 safe wrapping using char_indices
+        let mut prompt_lines = Vec::new();
+        let mut start = 0;
+        let mut char_count = 0;
+        for (idx, _) in prompt_and_input.char_indices() {
+            if char_count > 0 && char_count % max_chars == 0 {
+                prompt_lines.push(prompt_and_input[start..idx].to_string());
+                start = idx;
+            }
+            char_count += 1;
+        }
+        if start < prompt_and_input.len() {
+            prompt_lines.push(prompt_and_input[start..].to_string());
+        }
+        let prompt_lines_len = prompt_lines.len();
+        // Wie viele Zeilen passen insgesamt?
+        let total_lines = ((th - (history_start_y - ty) - 10.0) / line_height).floor() as usize;
+        // Wenn Prompt mehrzeilig ist, bleibt er immer direkt unter der letzten History-Zeile
+        let visible_history_lines = if total_lines > prompt_lines_len {
+            total_lines - prompt_lines_len
         } else {
             0
         };
-        
+        let start_idx = if wrapped_lines.len() > visible_history_lines {
+            wrapped_lines.len() - visible_history_lines
+        } else {
+            0
+        };
+        // History zeichnen
         let mut line_y = history_start_y;
         for line in &wrapped_lines[start_idx..] {
-            if line_y + line_height > ty + th - prompt_height - 10.0 {
+            if line_y + line_height > ty + th - 10.0 - (prompt_lines_len as f64 * line_height) {
                 break;
             }
             self.ctx.fill_text(line, tx + 10.0, line_y)?;
             line_y += line_height;
         }
-        
-        // Prompt moves down with history (but stays visible at bottom)
-        let prompt_y = if wrapped_lines.is_empty() {
-            history_start_y  // Right after header if no history
-        } else {
-            // Make sure prompt never goes below terminal bottom
-            let max_prompt_y = ty + th - 20.0;  // Leave 20px from bottom
-            line_y.max(history_start_y).min(max_prompt_y)
-        };
-        
-        let prompt = "explorer@endlessutopia:~$ ";
-        let cursor = if self.terminal_blink { "█" } else { " " };
-        let current_input = self.terminal_input.value();
-        let prompt_line = format!("{}{}{}", prompt, current_input, cursor);
-        
-        // Only draw prompt if it's within bounds
-        if prompt_y + 15.0 <= ty + th {
-            self.ctx.fill_text(&prompt_line, tx + 10.0, prompt_y)?;
+        // Prompt immer direkt nach der letzten History-Zeile
+        let mut y = line_y;
+        for line in &prompt_lines {
+            if y + 15.0 <= ty + th {
+                self.ctx.fill_text(line, tx + 10.0, y)?;
+            }
+            y += line_height;
         }
         
         self.ctx.restore();
