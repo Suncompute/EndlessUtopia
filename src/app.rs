@@ -895,12 +895,15 @@ impl App {
             "goto" => {
                 if parts.len() >= 3 {
                     if let (Ok(x), Ok(y)) = (parts[1].parse::<f64>(), parts[2].parse::<f64>()) {
-                        if x.is_finite() && y.is_finite() {
+                        let max_coord = 1_000_000.0;
+                        if !x.is_finite() || !y.is_finite() {
+                            self.terminal_output.push("error: invalid coordinates".to_string());
+                        } else if x.abs() > max_coord || y.abs() > max_coord {
+                            self.terminal_output.push(format!("error: coordinates out of bounds (must be between -{} and +{})", max_coord, max_coord));
+                        } else {
                             self.offset_x = x;
                             self.offset_y = y;
                             self.terminal_output.push(format!("teleported to ({}, {})", x, y));
-                        } else {
-                            self.terminal_output.push("error: invalid coordinates".to_string());
                         }
                     } else {
                         self.terminal_output.push("error: invalid numbers".to_string());
